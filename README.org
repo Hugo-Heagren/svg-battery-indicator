@@ -1,0 +1,41 @@
+#+title: svg-battery-indicator.el
+
+This is a simple package for generating an SVG battery indicator for
+us in the mode-line or tab-bar. It's not on MELPA or Gnu Elpa, so
+you'll have to install it manually, or using a GitHub helper like
+straight. See the top right of the screen-shot below:
+
+[[./svg-battery-indicator.jpg]]
+
+This package requires Emacs to be built with SVG support. You can test
+this by running ~(image-type-available-p 'svg)~. If you get ~t~, you
+have SVG support.
+
+* Usage
+The indicator takes advantage of ~display-battery-mode~ (and the
+~battery.el~ library generally). Add
+~svg-battery-indicator-set-mode-string~ to ~battery-update-functions~,
+and then use ~battery-display-mode~ as normal. You might have
+something like this in your ~init.el~:
+
+#+begin_src elisp
+  (add-to-list 'battery-update-functions
+	       'svg-battery-indicator-set-mode-string)
+
+  (display-battery-mode)
+
+  ;; To display in the mode-line
+  (add-to-list 'mode-line-format
+	       'battery-mode-line-string)
+
+  ;; To display in the tab-bar
+  (add-to-list 'tab-bar-format
+	       'battery-mode-line-string)
+#+end_src
+
+* Customization
+The variable ~svg-battery-indicator-length~ sets the length of the
+indicator. Otherwise all customization is through ~battery.el~. The
+indicator uses the threshholds set in ~battery-load-low~ and
+~battery-load-critical~, and represents them with the foreground
+colours from the faces ~battery-load-low~ and ~battery-load-critical~.
