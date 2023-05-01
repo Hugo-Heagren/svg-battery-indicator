@@ -100,22 +100,21 @@ CHARGING is non-nil a lightning symbol is drawn over the SVG."
     ;; Return the image, centered
     (svg-image svg :ascent 'center)))
 
-(defun svg-battery-indicator-set-mode-string (data)
-  "Set `battery-mode-line-string' to a battery SVG icon.
+(defun svg-battery-indicator-status-advice (data)
+  "Add an SVG icon associated with ?i in DATA.
 
 Get percentage and charging state from DATA, and pass these to
-`svg-battery-indicator' to get an svg. Then set this svg as the
-display property of a single-space string and set
-`battery-mode-line-string' to the result.
+`svg-battery-indicator' to get an svg. Return an alist like DATA,
+but also including an association of ?i and the returned SVG.
 
-If this function is used in `battery-update-functions', then
-`display-battery-mode' will display the svg."
+This has the effect of making the expando \"%i\" available in
+`battery-mode-line-format', expanding to a battery SVG."
   (let* ((percentage (car (read-from-string (cdr (assq ?p data)))))
 	 (charging (string-empty-p (alist-get 98 data)))
 	 (svg (svg-battery-indicator percentage charging))
 	 ;; NOTE This string has to be non-empty
 	 (str (propertize " " 'display svg)))
-    (setq battery-mode-line-string str)))
+    `(,@data (?i . ,str))))
 
 (provide 'svg-battery-indicator)
 ;;; svg-battery-indicator.el ends here
