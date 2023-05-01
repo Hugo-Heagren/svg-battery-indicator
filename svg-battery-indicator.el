@@ -110,7 +110,7 @@ but also including an association of ?i and the returned SVG.
 This has the effect of making the expando \"%i\" available in
 `battery-mode-line-format', expanding to a battery SVG."
   (let* ((percentage (car (read-from-string (cdr (assq ?p data)))))
-	 (charging (string-empty-p (alist-get 98 data)))
+	 (charging (string= (alist-get ?b data) "+"))
 	 (svg (svg-battery-indicator percentage charging))
 	 ;; NOTE This string has to be non-empty
 	 (str (propertize " " 'display svg)))
