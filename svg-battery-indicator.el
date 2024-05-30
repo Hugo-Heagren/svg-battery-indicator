@@ -38,11 +38,16 @@
   :group 'svg-battery-indicator
   :type 'integer)
 
+(defcustom svg-battery-indicator-stroke-face 'mode-line
+  "Face used for battery image borders."
+  :group 'svg-battery-indicator
+  :type 'face)
+
 (defun svg-battery-indicator--battery (base-height base-length nub-width stroke-width rounding-radius)
   "Generate a basic battery SVG."
   (let ((svg  (svg-create (+ nub-width base-length) base-height
 			  :stroke-width stroke-width
-			  :stroke-color "white")))
+			  :stroke-color (face-attribute svg-battery-indicator-stroke-face :foreground nil 'inherit))))
     ;; Base rectangle
     (svg-rectangle svg nub-width 0 base-length base-height
 		   :fill "transparent"
@@ -50,7 +55,8 @@
     ;; End `nub'
     (let ((ht 8))
       (svg-rectangle svg 0 (/ (- base-height ht) 2) nub-width ht
-		     :fill "white" :stroke-width 0
+		     :fill (face-attribute svg-battery-indicator-stroke-face :foreground nil 'inherit)
+                     :stroke-width 0
 		     :rx 2 :ry 2))
     svg))
 
@@ -70,7 +76,7 @@ CHARGING is non-nil a lightning symbol is drawn over the SVG."
 
     (if (stringp percentage)
         (svg-text svg "?"
-                  :fill "white"
+                  :fill (face-attribute svg-battery-indicator-stroke-face :foreground nil 'inherit)
                   :font-weight "bold"
                   :font-size (- base-ht sw)
                   :stroke-width 0
