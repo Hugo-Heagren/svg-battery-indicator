@@ -48,18 +48,18 @@
   :group 'svg-battery-indicator
   :type 'face)
 
-(defun svg-battery-indicator--battery (base-height base-length nub-width stroke-width rounding-radius)
+(defun svg-battery-indicator--battery (base-height base-length lug-width stroke-width rounding-radius)
   "Generate a basic battery SVG."
-  (let ((svg  (svg-create (+ nub-width base-length) base-height
+  (let ((svg  (svg-create (+ lug-width base-length) base-height
 			  :stroke-width stroke-width
 			  :stroke-color (face-attribute svg-battery-indicator-stroke-face :foreground nil 'inherit))))
     ;; Base rectangle
-    (svg-rectangle svg nub-width 0 base-length base-height
+    (svg-rectangle svg lug-width 0 base-length base-height
 		   :fill "transparent"
 		   :rx rounding-radius :ry rounding-radius)
     ;; End `nub'
-    (let ((ht 8))
-      (svg-rectangle svg 0 (/ (- base-height ht) 2) nub-width ht
+    (let ((height 8))
+      (svg-rectangle svg 0 (/ (- base-height height) 2) lug-width height
 		     :fill (face-attribute svg-battery-indicator-stroke-face :foreground nil 'inherit)
                      :stroke-width 0
 		     :rx 2 :ry 2))
@@ -71,22 +71,22 @@
 PERCENTAGE is the percentage of current charge, as an integer. If
 CHARGING is non-nil a lightning symbol is drawn over the SVG."
   ;; Use colors from `battery.el' faces for charge states
-  (let* ((base-ht (- (frame-char-height) 2))
-	 (base-len svg-battery-indicator-length)
-	 (x-os 3)      ;; Space on the left for `nub'
-	 (sw 2)	       ;; stroke-width
-	 (rnd 4)       ;; rounding radius
+  (let* ((base-height (- (frame-char-height) 2))
+	 (base-length svg-battery-indicator-length)
+	 (lug-width 3)      ;; Space on the left for `nub'
+	 (stroke-width 2)	       ;; stroke-width
+	 (rounding-radius 4)       ;; rounding radius
 	 ;; Base svg object
-	 (svg (svg-battery-indicator--battery base-ht base-len x-os sw rnd)))
+	 (svg (svg-battery-indicator--battery base-height base-length lug-width stroke-width rounding-radius)))
 
     (if (stringp percentage)
         (svg-text svg "?"
                   :fill (face-attribute svg-battery-indicator-stroke-face :foreground nil 'inherit)
                   :font-weight "bold"
-                  :font-size (- base-ht sw)
+                  :font-size (- base-height stroke-width)
                   :stroke-width 0
-                  :x (/ base-len 2)
-                  :y (- base-ht (* 1.5 sw)))
+                  :x (/ base-length 2)
+                  :y (- base-height (* 1.5 stroke-width)))
       (let ((color (face-attribute
 		    (cond
 		     (charging 'success)
@@ -97,29 +97,29 @@ CHARGING is non-nil a lightning symbol is drawn over the SVG."
 		     (t svg-battery-indicator-fill-face))
 		    :foreground nil 'inherit)))
         ;; Fill/percentage rectangle
-        (let* ((os (* 2 sw))
-	       (len (* (- base-len os)
-		       (/ percentage 100.0)))
+        (let* ((os (* 2 stroke-width))
+	       (length (* (- base-length os)
+		          (/ percentage 100.0)))
 	       (clip-path (svg-clip-path svg :id "clippath")))
           ;; Clipping path
           (svg-rectangle clip-path
-		         (+ x-os sw (- base-len os len)) sw
-		         len (- base-ht os))
+		         (+ lug-width stroke-width (- base-length os length)) stroke-width
+		         length (- base-height os))
           ;; We `draw' the whole thing, but also apply a clipping path
           ;; to make it the right length.
-          (svg-rectangle svg (+ x-os sw) sw (- base-len os) (- base-ht os)
-		         :fill color :rx (- rnd 1) :ry (- rnd 1)
+          (svg-rectangle svg (+ lug-width stroke-width) stroke-width (- base-length os) (- base-height os)
+		         :fill color :rx (- rounding-radius 1) :ry (- rounding-radius 1)
 		         :stroke-width 0 :clip-path "url(#clippath)"))
         ;; Only draw if we are actually charging
         (and charging
 	     ;; Draw a lightning shape over the battery
-	     (let ((half-len (+ x-os (/ base-len 2)))
-	           (half-ht  (/ base-ht 2)))
+	     (let ((half-length (+ lug-width (/ base-length 2)))
+	           (half-height  (/ base-height 2)))
 	       (svg-path svg
-		         `((moveto ((,half-len . 0)))
-		           (lineto ((,(- half-len 2)  . ,half-ht)))
-		           (lineto ((,(+ half-len 2)  . ,half-ht)))
-		           (lineto ((,half-len . ,base-ht))))
+		         `((moveto ((,half-length . 0)))
+		           (lineto ((,(- half-length 2)  . ,half-height)))
+		           (lineto ((,(+ half-length 2)  . ,half-height)))
+		           (lineto ((,half-length . ,base-height))))
 		         :stroke-width 2
 		         :fill "transparent")))))
     ;; Return the image, centered
