@@ -122,8 +122,8 @@ If CHARGING is non-nil a lightning symbol is drawn over the SVG."
 	        (half-height  (/ base-height 2)))
 	    (svg-path svg
 		      `((moveto ((,half-length . 0)))
-		        (lineto ((,(- half-length 2)  . ,half-height)))
-		        (lineto ((,(+ half-length 2)  . ,half-height)))
+		        (lineto ((,(- half-length stroke-width)  . ,half-height)))
+		        (lineto ((,(+ half-length stroke-width)  . ,half-height)))
 		        (lineto ((,half-length . ,base-height))))
 		      :stroke-width stroke-width
 		      :fill "transparent")))))
