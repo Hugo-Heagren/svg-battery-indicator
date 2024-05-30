@@ -49,7 +49,13 @@
   :type 'face)
 
 (defun svg-battery-indicator--battery (base-height base-length lug-width stroke-width rounding-radius)
-  "Generate a basic battery SVG."
+  "Generate a basic battery outline.
+
+The battery will have a height of BASE-HEIGHT, and will be
+BASE-LENGTH + LUG-WIDTH long, where LUG-WIDTH is the width of the
+lug (nub, terminal) at one end of the battery.  Additionally, it
+will be drawn with STROKE-WIDTH wide strokes, and corners rounded
+by ROUNDING-RADIUS."
   (let ((svg  (svg-create (+ lug-width base-length) base-height
 			  :stroke-width stroke-width
 			  :stroke-color (face-attribute svg-battery-indicator-stroke-face :foreground nil 'inherit))))
