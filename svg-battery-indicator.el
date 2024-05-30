@@ -68,8 +68,8 @@
 (defun svg-battery-indicator (percentage &optional charging)
   "Return an SVG image descriptor of a battery.
 
-PERCENTAGE is the percentage of current charge, as an integer. If
-CHARGING is non-nil a lightning symbol is drawn over the SVG."
+PERCENTAGE is the percentage of current charge, as an integer.
+If CHARGING is non-nil a lightning symbol is drawn over the SVG."
   ;; Use colors from `battery.el' faces for charge states
   (let* ((base-height (- (frame-char-height) 2))
 	 (base-length svg-battery-indicator-length)
@@ -129,8 +129,9 @@ CHARGING is non-nil a lightning symbol is drawn over the SVG."
   "Add an SVG icon associated with ?i in DATA.
 
 Get percentage and charging state from DATA, and pass these to
-`svg-battery-indicator' to get an svg. Return an alist like DATA,
-but also including an association of ?i and the returned SVG.
+`svg-battery-indicator' to get an svg.  Return an alist like
+DATA, but also including an association of ?i and the returned
+SVG.
 
 This has the effect of making the expando \"%i\" available in
 `battery-mode-line-format', expanding to a battery SVG."
