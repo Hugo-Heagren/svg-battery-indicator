@@ -43,6 +43,11 @@
   :group 'svg-battery-indicator
   :type 'face)
 
+(defcustom svg-battery-indicator-fill-face 'mode-line-inactive
+  "Face used to fill battery image based on percent."
+  :group 'svg-battery-indicator
+  :type 'face)
+
 (defun svg-battery-indicator--battery (base-height base-length nub-width stroke-width rounding-radius)
   "Generate a basic battery SVG."
   (let ((svg  (svg-create (+ nub-width base-length) base-height
@@ -89,7 +94,7 @@ CHARGING is non-nil a lightning symbol is drawn over the SVG."
 		      'battery-load-critical)
 		     ((<= percentage battery-load-low)
 		      'battery-load-low)
-		     (t 'mode-line))
+		     (t svg-battery-indicator-fill-face))
 		    :foreground nil 'inherit)))
         ;; Fill/percentage rectangle
         (let* ((os (* 2 sw))
