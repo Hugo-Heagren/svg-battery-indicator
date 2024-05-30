@@ -79,10 +79,9 @@ If CHARGING is non-nil a lightning symbol is drawn over the SVG."
   ;; Use colors from `battery.el' faces for charge states
   (let* ((base-height (- (frame-char-height) 2))
 	 (base-length svg-battery-indicator-length)
-	 (lug-width (round base-length 10))      ;; Space on the left for `nub'
-	 (stroke-width 2)	       ;; stroke-width
-	 (rounding-radius 4)       ;; rounding radius
-	 ;; Base svg object
+	 (lug-width (round base-length 10))
+	 (stroke-width 2)               ;TODO: What is the fraction of either height or length that should be used?
+	 (rounding-radius 4)            ;TODO: See above
 	 (svg (svg-battery-indicator--battery base-height base-length lug-width stroke-width rounding-radius)))
 
     (if (stringp percentage)
@@ -103,7 +102,7 @@ If CHARGING is non-nil a lightning symbol is drawn over the SVG."
 		     (t svg-battery-indicator-fill-face))
 		    :foreground nil 'inherit)))
         ;; Fill/percentage rectangle
-        (let* ((os (* 2 stroke-width))
+        (let* ((os (* 2 stroke-width))  ;TODO: Rename, what does `os' stand for?
 	       (length (* (- base-length os)
 		          (/ percentage 100.0)))
 	       (clip-path (svg-clip-path svg :id "clippath")))
