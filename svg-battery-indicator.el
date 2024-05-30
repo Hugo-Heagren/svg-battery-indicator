@@ -38,65 +38,79 @@
   :group 'svg-battery-indicator
   :type 'integer)
 
+(defun svg-battery-indicator--battery (base-height base-length nub-width stroke-width rounding-radius)
+  "Generate a basic battery SVG."
+  (let ((svg  (svg-create (+ nub-width base-length) base-height
+			  :stroke-width stroke-width
+			  :stroke-color "white")))
+    ;; Base rectangle
+    (svg-rectangle svg nub-width 0 base-length base-height
+		   :fill "transparent"
+		   :rx rounding-radius :ry rounding-radius)
+    ;; End `nub'
+    (let ((ht 8))
+      (svg-rectangle svg 0 (/ (- base-height ht) 2) nub-width ht
+		     :fill "white" :stroke-width 0
+		     :rx 2 :ry 2))
+    svg))
+
 (defun svg-battery-indicator (percentage &optional charging)
   "Return an SVG image descriptor of a battery.
 
 PERCENTAGE is the percentage of current charge, as an integer. If
 CHARGING is non-nil a lightning symbol is drawn over the SVG."
   ;; Use colors from `battery.el' faces for charge states
-  (let* ((color (face-attribute
-		 (cond
-		  (charging 'success)
-		  ((<= percentage battery-load-critical)
-		   'battery-load-critical)
-		  ((<= percentage battery-load-low)
-		   'battery-load-low)
-		  (t 'mode-line))
-		 :foreground nil 'inherit))
-	 (base-ht (- (frame-char-height) 2))
+  (let* ((base-ht (- (frame-char-height) 2))
 	 (base-len svg-battery-indicator-length)
 	 (x-os 3)      ;; Space on the left for `nub'
 	 (sw 2)	       ;; stroke-width
 	 (rnd 4)       ;; rounding radius
 	 ;; Base svg object
-	 (svg (svg-create (+ x-os base-len) base-ht
-			  :stroke-width sw
-			  :stroke-color "white")))
-    ;; Base rectangle
-    (svg-rectangle svg x-os 0 base-len base-ht
-		   :fill "transparent"
-		   :rx rnd :ry rnd)
-    ;; End `nub'
-    (let ((ht 8))
-      (svg-rectangle svg 0 (/ (- base-ht ht) 2) x-os ht
-		     :fill "white" :stroke-width 0
-		     :rx 2 :ry 2))
-    ;; Fill/percentage rectangle
-    (let* ((os (* 2 sw))
-	   (len (* (- base-len os)
-		   (/ percentage 100.0)))
-	   (clip-path (svg-clip-path svg :id "clippath")))
-      ;; Clipping path
-      (svg-rectangle clip-path
-		     (+ x-os sw (- base-len os len)) sw
-		     len (- base-ht os))
-      ;; We `draw' the whole thing, but also apply a clipping path
-      ;; to make it the right length.
-      (svg-rectangle svg (+ x-os sw) sw (- base-len os) (- base-ht os)
-		     :fill color :rx (- rnd 1) :ry (- rnd 1)
-		     :stroke-width 0 :clip-path "url(#clippath)"))
-    ;; Only draw if we are actually charging
-    (and charging
-	 ;; Draw a lightning shape over the battery
-	 (let ((half-len (+ x-os (/ base-len 2)))
-	       (half-ht  (/ base-ht 2)))
-	   (svg-path svg
-		     `((moveto ((,half-len . 0)))
-		       (lineto ((,(- half-len 2)  . ,half-ht)))
-		       (lineto ((,(+ half-len 2)  . ,half-ht)))
-		       (lineto ((,half-len . ,base-ht))))
-		     :stroke-width 2
-		     :fill "transparent")))
+	 (svg (svg-battery-indicator--battery base-ht base-len x-os sw rnd)))
+
+    (if (stringp percentage)
+        (svg-text svg "?"
+                  :fill "white"
+                  :font-weight "bold"
+                  :font-size (- base-ht sw)
+                  :stroke-width 0
+                  :x (/ base-len 2)
+                  :y (- base-ht (* 1.5 sw)))
+      (let ((color (face-attribute
+		    (cond
+		     (charging 'success)
+                     ((<= percentage battery-load-critical)
+		      'battery-load-critical)
+		     ((<= percentage battery-load-low)
+		      'battery-load-low)
+		     (t 'mode-line))
+		    :foreground nil 'inherit)))
+        ;; Fill/percentage rectangle
+        (let* ((os (* 2 sw))
+	       (len (* (- base-len os)
+		       (/ percentage 100.0)))
+	       (clip-path (svg-clip-path svg :id "clippath")))
+          ;; Clipping path
+          (svg-rectangle clip-path
+		         (+ x-os sw (- base-len os len)) sw
+		         len (- base-ht os))
+          ;; We `draw' the whole thing, but also apply a clipping path
+          ;; to make it the right length.
+          (svg-rectangle svg (+ x-os sw) sw (- base-len os) (- base-ht os)
+		         :fill color :rx (- rnd 1) :ry (- rnd 1)
+		         :stroke-width 0 :clip-path "url(#clippath)"))
+        ;; Only draw if we are actually charging
+        (and charging
+	     ;; Draw a lightning shape over the battery
+	     (let ((half-len (+ x-os (/ base-len 2)))
+	           (half-ht  (/ base-ht 2)))
+	       (svg-path svg
+		         `((moveto ((,half-len . 0)))
+		           (lineto ((,(- half-len 2)  . ,half-ht)))
+		           (lineto ((,(+ half-len 2)  . ,half-ht)))
+		           (lineto ((,half-len . ,base-ht))))
+		         :stroke-width 2
+		         :fill "transparent")))))
     ;; Return the image, centered
     (svg-image svg :ascent 'center)))
 
