@@ -111,17 +111,17 @@ CHARGING is non-nil a lightning symbol is drawn over the SVG."
 		         :fill color :rx (- rounding-radius 1) :ry (- rounding-radius 1)
 		         :stroke-width 0 :clip-path "url(#clippath)"))
         ;; Only draw if we are actually charging
-        (and charging
-	     ;; Draw a lightning shape over the battery
-	     (let ((half-length (+ lug-width (/ base-length 2)))
-	           (half-height  (/ base-height 2)))
-	       (svg-path svg
-		         `((moveto ((,half-length . 0)))
-		           (lineto ((,(- half-length 2)  . ,half-height)))
-		           (lineto ((,(+ half-length 2)  . ,half-height)))
-		           (lineto ((,half-length . ,base-height))))
-		         :stroke-width 2
-		         :fill "transparent")))))
+        (when charging
+	  ;; Draw a lightning shape over the battery
+	  (let ((half-length (+ lug-width (/ base-length 2)))
+	        (half-height  (/ base-height 2)))
+	    (svg-path svg
+		      `((moveto ((,half-length . 0)))
+		        (lineto ((,(- half-length 2)  . ,half-height)))
+		        (lineto ((,(+ half-length 2)  . ,half-height)))
+		        (lineto ((,half-length . ,base-height))))
+		      :stroke-width 2
+		      :fill "transparent")))))
     ;; Return the image, centered
     (svg-image svg :ascent 'center)))
 
