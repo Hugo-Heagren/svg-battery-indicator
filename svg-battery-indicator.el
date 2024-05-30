@@ -64,7 +64,7 @@ by ROUNDING-RADIUS."
 		   :fill "transparent"
 		   :rx rounding-radius :ry rounding-radius)
     ;; End `nub'
-    (let ((height 8))
+    (let ((height (round (* 0.5 base-height))))
       (svg-rectangle svg 0 (/ (- base-height height) 2) lug-width height
 		     :fill (face-attribute svg-battery-indicator-stroke-face :foreground nil 'inherit)
                      :stroke-width 0
