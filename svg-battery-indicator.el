@@ -79,8 +79,8 @@ If CHARGING is non-nil a lightning symbol is drawn over the SVG."
   ;; Use colors from `battery.el' faces for charge states
   (let* ((base-height (- (frame-char-height) 2))
 	 (base-length svg-battery-indicator-length)
-	 (lug-width (round base-length 10))
 	 (stroke-width 2)               ;TODO: What is the fraction of either height or length that should be used?
+	 (lug-width (round (* 1.5 stroke-width)))
 	 (rounding-radius 4)            ;TODO: See above
 	 (svg (svg-battery-indicator--battery base-height base-length lug-width stroke-width rounding-radius)))
 
