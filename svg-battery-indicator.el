@@ -125,7 +125,7 @@ If CHARGING is non-nil a lightning symbol is drawn over the SVG."
 		        (lineto ((,(- half-length 2)  . ,half-height)))
 		        (lineto ((,(+ half-length 2)  . ,half-height)))
 		        (lineto ((,half-length . ,base-height))))
-		      :stroke-width 2
+		      :stroke-width stroke-width
 		      :fill "transparent")))))
     ;; Return the image, centered
     (svg-image svg :ascent 'center)))
