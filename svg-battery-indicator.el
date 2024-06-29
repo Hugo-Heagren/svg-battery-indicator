@@ -38,15 +38,15 @@
   :group 'svg-battery-indicator
   :type 'integer)
 
-(defcustom svg-battery-indicator-stroke-face 'mode-line
-  "Face used for battery image borders."
-  :group 'svg-battery-indicator
-  :type 'face)
+(defface svg-battery-indicator-stroke-face '((t :inherit mode-line))
+  "Face used to draw battery indicator edges.
 
-(defcustom svg-battery-indicator-fill-face 'mode-line-inactive
+Note: the foreground property is used."
+  :group 'svg-battery-indicator)
+
+(defface svg-battery-indicator-fill-face '((t :inherit mode-line-inactive))
   "Face used to fill battery image based on percent."
-  :group 'svg-battery-indicator
-  :type 'face)
+  :group 'svg-battery-indicator)
 
 (defun svg-battery-indicator--battery (base-height base-length lug-width stroke-width rounding-radius)
   "Generate a basic battery outline.
@@ -58,7 +58,7 @@ will be drawn with STROKE-WIDTH wide strokes, and corners rounded
 by ROUNDING-RADIUS."
   (let ((svg  (svg-create (+ lug-width base-length) base-height
 			  :stroke-width stroke-width
-			  :stroke-color (face-attribute svg-battery-indicator-stroke-face :foreground nil 'inherit))))
+			  :stroke-color (face-attribute 'svg-battery-indicator-stroke-face :foreground nil 'inherit))))
     ;; Base rectangle
     (svg-rectangle svg lug-width 0 base-length base-height
 		   :fill "transparent"
@@ -66,7 +66,7 @@ by ROUNDING-RADIUS."
     ;; End `nub'
     (let ((height (round (* 0.5 base-height))))
       (svg-rectangle svg 0 (/ (- base-height height) 2) lug-width height
-		     :fill (face-attribute svg-battery-indicator-stroke-face :foreground nil 'inherit)
+		     :fill (face-attribute 'svg-battery-indicator-stroke-face :foreground nil 'inherit)
                      :stroke-width 0
 		     :rx 2 :ry 2))
     svg))
@@ -86,7 +86,7 @@ If CHARGING is non-nil a lightning symbol is drawn over the SVG."
 
     (if (stringp percentage)
         (svg-text svg "?"
-                  :fill (face-attribute svg-battery-indicator-stroke-face :foreground nil 'inherit)
+                  :fill (face-attribute 'svg-battery-indicator-stroke-face :foreground nil 'inherit)
                   :font-weight "bold"
                   :font-size (- base-height stroke-width)
                   :stroke-width 0
@@ -99,7 +99,7 @@ If CHARGING is non-nil a lightning symbol is drawn over the SVG."
 		      'battery-load-critical)
 		     ((<= percentage battery-load-low)
 		      'battery-load-low)
-		     (t svg-battery-indicator-fill-face))
+		     (t 'svg-battery-indicator-fill-face))
 		    :foreground nil 'inherit)))
         ;; Fill/percentage rectangle
         (let* ((os (* 2 stroke-width))  ;TODO: Rename, what does `os' stand for?
