@@ -13,12 +13,51 @@ have SVG support.
 
 * Usage
 The indicator takes advantage of ~display-battery-mode~ (and the
-~battery.el~ library generally). It uses advice to add an extra
-expando to ~battery-mode-line-format~. To use, add
+~battery.el~ library generally). Primarily, this package provides a
+function (~svg-battery-indicator~) which takes a charge level and
+returns an SVG. You then need to setup battery.el to use this
+function. You need to have ~battery-status-function~ (whatever it is)
+include the generated SVG and a letter (which will be used as an
+expando) in its return value.
+
+There are two ways to do this. One way is to set
+~battery-status-function~ to your own function, with the right kind of
+return value. I did this by writing a simple wrapper over the function
+I was using otherwise. You might have something like this in your
+~init.el~ (you needn't use '?i' -- that's just what I used):
+
+#+begin_src elisp
+(defun my/battery-upower-with-svg ()
+  "Wrapper over `battery-upower' which adds an SVG for \"i\"."
+  (let* ((data (battery-upower))
+	 (percentage (car (read-from-string (cdr (assq ?p data)))))
+	 (charging (string= (alist-get ?b data) "+"))
+	 (svg (svg-battery-indicator percentage charging))
+	 ;; NOTE This string has to be non-empty
+	 (str (propertize " " 'display svg)))
+    `(,@data (?i . ,str))))
+
+(display-battery-mode)
+
+(setq battery-mode-line-format "%p%% %i")
+
+;; To display in the mode-line
+(add-to-list 'mode-line-format
+	     'battery-mode-line-string)
+
+;; To display in the tab-bar
+(add-to-list 'tab-bar-format
+	     'battery-mode-line-string)
+
+
+#+end_src
+
+The second way is to advice your existing ~battery-status-function~.
+This package provides a function designed for doing this. To use, add
 ~svg-battery-indicator-status-advice~ as ~:filter-return~ advice to
 ~battery-status-function~ (whatever ~battery-status-function~ is on
 your machine). The expando ~%i~ will then be available in
-~battery-mode-line-format~, and expands to an a battery SVG.
+~battery-mode-line-format~, and expands to a battery SVG.
 
 You might have something like this in your ~init.el~:
 
