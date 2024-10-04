@@ -144,6 +144,12 @@ Use when `svg-battery-indicator-sizes-function' is
 Note: the foreground property is used."
   :group 'svg-battery-indicator)
 
+(defface svg-battery-indicator-bolt-face '((t :inherit mode-line))
+  "Face used to draw battery indicator lightning bolt.
+
+Note: the foreground property is used."
+  :group 'svg-battery-indicator)
+
 (defface svg-battery-indicator-fill-face '((t :inherit mode-line-inactive))
   "Face used to fill battery image based on percent."
   :group 'svg-battery-indicator)
@@ -279,6 +285,8 @@ The appearance of the battery is controlled by
                         (lineto ((,(+ .bolt-x .stroke-width) . ,.bolt-y)))
                         (lineto ((,.bolt-x . ,.height))))
                       :stroke-width .stroke-width
+                      :stroke-color (face-attribute 'svg-battery-indicator-bolt-face
+                                                    :foreground nil 'inherit)
                       :fill "transparent"))))
       (svg-image svg :ascent 'center))))
 
